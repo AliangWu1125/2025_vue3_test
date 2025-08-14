@@ -1,12 +1,11 @@
 <script setup>
 // 如果使用pinia
-// import { useFavoriteStore } from '@/stores/favorites'
-// const favoriteStore = useFavoriteStore()
+import { useFavoriteStore } from "@/stores/favorites";
+const favoriteStore = useFavoriteStore();
 
 // 任務6. 移除收藏列表，不限定方式
-const favList = ref([])
-const removeFav = (target) => {}
-
+const favList = ref([]);
+const removeFav = (target) => {};
 </script>
 
 <template>
@@ -29,7 +28,6 @@ const removeFav = (target) => {}
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>

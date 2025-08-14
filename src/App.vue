@@ -1,37 +1,49 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from "vue";
+import FavList from "@/components/FavList.vue";
+import Albums from "@/assets/albums.json";
 // 任務1. 引入FavList組件到App.vue的aside中
 
 // 如果使用pinia
-// import { useFavoriteStore } from '@/stores/favorites'
-// const favoriteStore = useFavoriteStore()
+import { useFavoriteStore } from "@/stores/favorites";
+
+const favoriteStore = useFavoriteStore();
 
 // 任務2. 顯示專輯資料
 // 目前畫面中僅呈現defaultData
 // 請將資料替換成`public/albums.json`中的專輯資料
-const defaultData = {
-  "id": 1,
-  "images": "https://i.scdn.co/image/ab67616d00001e023e59f3e73b99ed248ab7bae2",
-  "name": "Day & Night (feat. Jay Park)",
-  "artists": "Lee Young Ji"
-}
-onMounted(()=>{
-  //fetch('src/assets/albums.json')
-})
+// const defaultData = {
+//   id: 1,
+//   images: "https://i.scdn.co/image/ab67616d00001e023e59f3e73b99ed248ab7bae2",
+//   name: "Day & Night (feat. Jay Park)",
+//   artists: "Lee Young Ji",
+// };
+const AlbumsData = Albums;
+onMounted(() => {
+  fetch("src/assets/albums.json");
+});
 
 // 任務3:開啟關閉側拉選單(收藏列表)
-const asideToggle = ref(false)
-const toggleAside = () => {}
+const asideToggle = ref(false);
+const toggleAside = () => {
+  asideToggle.value = !asideToggle.value;
+};
 
 // 任務4.專輯資料可以被input搜尋
-const search = ref('')
+const search = ref("");
+const filterAlubums = computed(() =>
+  Albums.filter(
+    (album) =>
+      album.name.toLowerCase().includes(search.value.toLowerCase()) ||
+      album.artists.toLowerCase().includes(search.value.toLowerCase())
+  )
+);
 
 // 任務5.加入我的收藏
 // 不限定方式，如果不知道怎麼使用pinia可以用其他方式
 const addFav = (item) => {
   console.log(item);
-}
-
+};
 </script>
 
 <template>
@@ -45,14 +57,14 @@ const addFav = (item) => {
   </header>
 
   <main>
-    <div class="card">
-      <img :src="defaultData.images" />
+    <div v-for="(albums, index) in filterAlubums" :key="albums.id" class="card">
+      <img :src="albums.images" />
       <div class="card_body">
-        <h6>{{ defaultData.name }}</h6>
-        <p>{{ defaultData.artists }}</p>
+        <h6>{{ albums.name }}</h6>
+        <p>{{ albums.artists }}</p>
       </div>
       <div class="card_footer">
-        <button class="favoriteBtn" @click="addFav(defaultData)">
+        <button class="favoriteBtn" @click="addFav(albums)">
           <img src="~@/assets/heartBlack.png" alt="收藏專輯" />
         </button>
       </div>
@@ -60,17 +72,19 @@ const addFav = (item) => {
   </main>
 
   <aside :class="{ open: asideToggle }">
+    <FavList></FavList>
+
     <!-- 收藏清單 -->
   </aside>
 </template>
 
 <style lang="scss">
-button{
+button {
   width: 2rem;
   height: 2rem;
   border-radius: 2rem;
   padding: 0.2rem;
-  img{
+  img {
     width: 100%;
   }
 }
@@ -81,7 +95,7 @@ header {
   width: 100%;
   z-index: 2;
   background-color: #f9f9f9;
-  >div{
+  > div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
