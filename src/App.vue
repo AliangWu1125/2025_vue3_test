@@ -1,12 +1,12 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import FavList from "@/components/FavList.vue";
+import { ref, computed } from "vue";
 import Albums from "@/assets/albums.json";
+
 // 任務1. 引入FavList組件到App.vue的aside中
+import FavList from "@/components/FavList.vue";
 
 // 如果使用pinia
 import { useFavoriteStore } from "@/stores/favorites";
-
 const favoriteStore = useFavoriteStore();
 
 // 任務2. 顯示專輯資料
@@ -18,10 +18,6 @@ const favoriteStore = useFavoriteStore();
 //   name: "Day & Night (feat. Jay Park)",
 //   artists: "Lee Young Ji",
 // };
-const AlbumsData = Albums;
-onMounted(() => {
-  fetch("src/assets/albums.json");
-});
 
 // 任務3:開啟關閉側拉選單(收藏列表)
 const asideToggle = ref(false);
@@ -31,7 +27,7 @@ const toggleAside = () => {
 
 // 任務4.專輯資料可以被input搜尋
 const search = ref("");
-const filterAlubums = computed(() =>
+const filterAlbums = computed(() =>
   Albums.filter(
     (album) =>
       album.name.toLowerCase().includes(search.value.toLowerCase()) ||
@@ -41,8 +37,8 @@ const filterAlubums = computed(() =>
 
 // 任務5.加入我的收藏
 // 不限定方式，如果不知道怎麼使用pinia可以用其他方式
-const addFav = (item) => {
-  console.log(item);
+const addFav = (album) => {
+  favoriteStore.addFav(album);
 };
 </script>
 
@@ -51,20 +47,20 @@ const addFav = (item) => {
     <div>
       <input type="search" v-model="search" />
       <button @click="toggleAside">
-        <img src="~@/assets/heartRed.png" alt="收藏列表" />
+        <img src="@/assets/heartRed.png" alt="收藏列表" />
       </button>
     </div>
   </header>
 
   <main>
-    <div v-for="(albums, index) in filterAlubums" :key="albums.id" class="card">
-      <img :src="albums.images" />
+    <div v-for="(album, index) in filterAlbums" :key="album.id" class="card">
+      <img :src="album.images" />
       <div class="card_body">
-        <h6>{{ albums.name }}</h6>
-        <p>{{ albums.artists }}</p>
+        <h6>{{ album.name }}</h6>
+        <p>{{ album.artists }}</p>
       </div>
       <div class="card_footer">
-        <button class="favoriteBtn" @click="addFav(albums)">
+        <button class="favoriteBtn" @click="addFav(album)">
           <img src="~@/assets/heartBlack.png" alt="收藏專輯" />
         </button>
       </div>

@@ -7,7 +7,10 @@ export const useFavoriteStore = defineStore("favoriteStore", () => {
 
   // 任務8. 加入我的最愛
   const addFav = (target) => {
-    console.log(target);
+    const isExist = list.value.some((item) => item.id === target.id);
+    if (!isExist) {
+      list.value.push(target);
+    }
   };
 
   // 移除我的最愛
